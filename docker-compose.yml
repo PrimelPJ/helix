@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  helix-1:
+    build: .
+    container_name: helix-1
+    command: >
+      helixd
+      --id node1
+      --raft :7001
+      --http :8001
+      --peers node2=helix-2:7002,node3=helix-3:7003
+    ports:
+      - "8001:8001"
+    networks:
+      - helixnet
+
+  helix-2:
+    build: .
+    container_name: helix-2
+    command: >
+      helixd
+      --id node2
+      --raft :7002
+      --http :8002
+      --peers node1=helix-1:7001,node3=helix-3:7003
+    ports:
+      - "8002:8002"
+    networks:
+      - helixnet
+
+  helix-3:
+    build: .
+    container_name: helix-3
+    command: >
+      helixd
+      --id node3
+      --raft :7003
+      --http :8003
+      --peers node1=helix-1:7001,node2=helix-2:7002
+    ports:
+      - "8003:8003"
+    networks:
+      - helixnet
+
+networks:
+  helixnet:
+    driver: bridge
